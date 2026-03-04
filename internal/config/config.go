@@ -18,7 +18,8 @@ type Config struct {
 	Env      string        `yaml:"env" env:"ENV" env-default:"development"`
 	TokenTTL time.Duration `yaml:"token_ttl" env:"TOKEN_TTL"`
 	Server   HTTPServer    `yaml:"http_server" env:"HTTP_SERVER"`
-	Storage  Storage       `yaml:"storage" env:"STORAGE"`
+	Storage  Storage       `yaml:"postgres" env:"STORAGE"`
+	Cache    Cache         `yaml:"cache" env:"CACHE"`
 }
 
 // HTTPServer Config
@@ -39,6 +40,12 @@ type Storage struct {
 	MaxOpenConnection int           `yaml:"max_open_connection" env:"DB_MAX_OPEN_CONNECTION" env-default:"25"`
 	MaxIdleConnection int           `yaml:"max_idle_connection" env:"DB_MAX_IDLE_CONNECTION" env-default:"25"`
 	ConnMaxLifetime   time.Duration `yaml:"conn_max_lifetime" env:"DB_CONN_MAX_LIFETIME" env-default:"5m"`
+}
+
+type Cache struct {
+	Addr     string `yaml:"addr" env:"CACHE_ADDR" env-required:"true"`
+	Password string `yaml:"password" env:"CACHE_PASSWORD" env-required:"true"`
+	Database int    `yaml:"database" env:"CACHE_DB" env-required:"true"`
 }
 
 // MustLoad - loads the configuration

@@ -20,7 +20,7 @@ func (s *Server) RunServer(address string, h http.Handler) error {
 		ReadTimeout:    10 * time.Second,
 	}
 
-	fmt.Printf("Server started at: %s\n", address)
+	fmt.Printf("Server started at: %s\n\n\n", address)
 
 	return s.httpServer.ListenAndServe()
 }

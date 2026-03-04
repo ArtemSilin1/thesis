@@ -7,8 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 	"thesis/internal/config"
+	"thesis/internal/postgres"
+	cache "thesis/internal/redis"
 	"thesis/internal/server"
-	"thesis/internal/storage"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -26,7 +27,7 @@ func main() {
 	log.Debug("debug logging enabled")
 
 	// Init database connection
-	var databaseC storage.DatabaseClient
+	var databaseC postgres.DatabaseClient
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -38,6 +39,22 @@ func main() {
 	defer pool.Close()
 
 	log.Info("connected to database")
+
+	// Init redis connection
+	readClient, err := cache.NewClient(
+		appConfig.Cache.Addr,
+		appConfig.Cache.Password,
+		appConfig.Cache.Database,
+	)
+	if err != nil {
+		panic(err)
+	}
+	defer func(readClient *cache.Client) {
+		err := readClient.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(readClient)
 
 	// Init router
 	router := gin.Default()
